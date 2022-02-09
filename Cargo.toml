@@ -7,3 +7,5 @@ edition = "2021"
 
 [dependencies]
 norad = "0.6.0"
+quick-xml = "0.22.0"
+failure = "0.1.6"
