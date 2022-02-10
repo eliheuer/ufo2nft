@@ -8,6 +8,7 @@
 //! Afterwards it will print the xml tree to stderr, which may be useful when
 //! debugging parse errors.
 
+use std::any::type_name;
 use std::ffi::OsStr;
 use std::path::PathBuf;
 use std::{env, fs, io};
@@ -19,6 +20,10 @@ use quick_xml::{
 };
 
 use norad::Glyph;
+
+fn print_type_of<T>(_: &T) {
+    println!("TYPE: {}", std::any::type_name::<T>())
+}
 
 fn main() -> Result<(), io::Error> {
     let path = match env::args().nth(1).map(PathBuf::from) {
@@ -34,6 +39,10 @@ fn main() -> Result<(), io::Error> {
     };
 
     let glyph = Glyph::load(&path).unwrap();
+    println!("DEBUG: {:?}", glyph);
+    print_type_of(&glyph);
+    print_type_of(&glyph.name);
+    println!("{}", glyph.name);
     let to_xml = glyph.encode_xml().unwrap();
     let to_xml = String::from_utf8(to_xml).unwrap();
     // redirect this to a file to get the rewritten glif
