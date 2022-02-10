@@ -8,7 +8,7 @@
 //! Afterwards it will print the xml tree to stderr, which may be useful when
 //! debugging parse errors.
 
-use std::any::type_name;
+//use std::any::type_name;
 use std::ffi::OsStr;
 use std::path::PathBuf;
 use std::{env, fs, io};
@@ -20,6 +20,9 @@ use quick_xml::{
 };
 
 use norad::Glyph;
+use svg::Document;
+use svg::node::element::Path;
+use svg::node::element::path::Data;
 
 fn print_type_of<T>(_: &T) {
     println!("TYPE: {}", std::any::type_name::<T>())
@@ -47,6 +50,26 @@ fn main() -> Result<(), io::Error> {
     let to_xml = String::from_utf8(to_xml).unwrap();
     // redirect this to a file to get the rewritten glif
     println!("{}", to_xml);
+
+
+    let svg_data = Data::new()
+        .move_to((10, 10))
+        .line_by((0, 50))
+        .line_by((50, 0))
+        .line_by((0, -50))
+        .close();
+
+    let svg_path = Path::new()
+        .set("fill", "none")
+        .set("stroke", "black")
+        .set("stroke-width", 3)
+        .set("d", svg_data);
+
+    let svg_document = Document::new()
+        .set("viewBox", (0, 0, 2048, 2048))
+        .add(svg_path);
+
+    svg::save("on-chain-nft-image.svg", &svg_document).unwrap();
 
     let xml = fs::read_to_string(&path)?;
     match print_tokens(&xml) {
